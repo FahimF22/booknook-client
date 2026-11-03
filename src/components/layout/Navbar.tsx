@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { Suspense } from "react";
 import toast from "react-hot-toast";
 import { LuMenu } from "react-icons/lu";
 import { logoutAction } from "@/app/actions/auth";
@@ -18,7 +19,25 @@ const links = [
   { href: "/my-borrows", label: "My Borrows", private: true },
 ];
 
+// Reading the current URL needs a Suspense boundary on pages with dynamic parts (Next.js 16).
+// The placeholder only shows the logo, for the brief moment before the real navbar is ready.
 export default function Navbar() {
+  return (
+    <Suspense
+      fallback={
+        <header className="sticky top-0 z-40 border-b border-base-300 bg-base-100/90 backdrop-blur">
+          <nav className="navbar page-container min-h-16">
+            <Logo />
+          </nav>
+        </header>
+      }
+    >
+      <NavbarContent />
+    </Suspense>
+  );
+}
+
+function NavbarContent() {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session, isPending } = useSession();
