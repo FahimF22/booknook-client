@@ -4,17 +4,18 @@ import { Suspense } from "react";
 import { LuArrowRight } from "react-icons/lu";
 import BookGrid from "@/components/books/BookGrid";
 import LoadError from "@/components/ui/LoadError";
+import Reveal from "@/components/ui/Reveal";
 import Spinner from "@/components/ui/Spinner";
 import { fetchBooks } from "@/lib/api";
 
 export default function NewArrivals() {
   return (
     <section className="section page-container">
-      <div className="text-center">
+      <Reveal className="text-center">
         <p className="font-semibold uppercase tracking-widest text-secondary">Fresh on the shelf</p>
         <h2 className="section-title mt-2">New Arrivals</h2>
         <p className="section-subtitle mx-auto">The latest books our readers have added to the BookNook library.</p>
-      </div>
+      </Reveal>
 
       <div className="mt-12">
         <Suspense fallback={<Spinner label="Loading new arrivals..." />}>
