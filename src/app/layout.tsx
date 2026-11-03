@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
+import { DM_Sans, Fraunces } from "next/font/google";
 import "./globals.css";
+
+const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans" });
+const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces" });
 
 export const metadata: Metadata = {
   title: {
@@ -11,8 +15,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en">
-      <body className="min-h-screen flex flex-col antialiased">{children}</body>
+    <html lang="en" className={`${dmSans.variable} ${fraunces.variable}`}>
+      <body className="flex min-h-screen flex-col antialiased">{children}</body>
     </html>
   );
 }
