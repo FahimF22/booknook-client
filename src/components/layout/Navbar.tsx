@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import { LuMenu } from "react-icons/lu";
+import { logoutAction } from "@/app/actions/auth";
 import Logo from "@/components/ui/Logo";
 import ThemeToggle from "@/components/ui/ThemeToggle";
-import { signOut, useSession } from "@/lib/auth-client";
+import { authClient, useSession } from "@/lib/auth-client";
 import UserMenu from "./UserMenu";
 
 const links = [
@@ -23,9 +25,10 @@ export default function Navbar() {
   const user = session?.user ?? null;
 
   const handleLogout = async () => {
-    await signOut();
+    await logoutAction(); // also clears pages cached while logged in
+    authClient.$store.notify("$sessionSignal");
+    toast.success("You have been logged out. See you soon!");
     router.push("/");
-    router.refresh();
   };
 
   const visibleLinks = links.filter((l) => !l.private || user);

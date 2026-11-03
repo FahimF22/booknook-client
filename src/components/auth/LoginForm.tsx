@@ -5,7 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import toast from "react-hot-toast";
 import { LuEye, LuEyeOff } from "react-icons/lu";
-import { signIn } from "@/lib/auth-client";
+import { loginAction } from "@/app/actions/auth";
+import { authClient } from "@/lib/auth-client";
 import { safeRedirect } from "@/lib/redirect";
 import GoogleButton, { OrDivider } from "./GoogleButton";
 
@@ -24,23 +25,23 @@ export default function LoginForm() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    const { error } = await signIn.email({ email: email.trim(), password });
+    const result = await loginAction(email.trim(), password).catch(() => null);
     setLoading(false);
 
-    if (error) {
+    if (!result?.ok) {
       const message =
-        error.code === "INVALID_EMAIL_OR_PASSWORD"
+        result?.code === "INVALID_EMAIL_OR_PASSWORD"
           ? "Wrong email or password. Please try again."
-          : error.message || "Login failed. Please try again.";
+          : result?.message || "Login failed. Please try again.";
       setError(message);
       toast.error(message);
       return;
     }
 
     setPassword("");
+    authClient.$store.notify("$sessionSignal"); // update the navbar right away
     toast.success("Welcome back to BookNook!");
     router.push(destination);
-    router.refresh();
   };
 
   // Password reset is intentionally not built (assignment note)
