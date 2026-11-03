@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import { LuLogOut, LuUser } from "react-icons/lu";
+import Avatar from "@/components/ui/Avatar";
 
 export interface NavUser {
   name: string;
@@ -11,28 +11,11 @@ export interface NavUser {
 }
 
 export default function UserMenu({ user, onLogout }: { user: NavUser; onLogout: () => void }) {
-  const initial = user.name?.trim().charAt(0).toUpperCase() || "?";
-  // Remember which photo URL failed, so a broken link falls back to the initial
-  const [failedSrc, setFailedSrc] = useState<string | null>(null);
-  const showImage = user.image && user.image !== failedSrc;
-
   return (
     <div className="dropdown dropdown-end">
-      <div tabIndex={0} role="button" className="avatar btn btn-ghost btn-circle" aria-label="Open user menu">
-        <div className="w-10 rounded-full ring-2 ring-primary ring-offset-2 ring-offset-base-100">
-          {showImage ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={user.image!}
-              alt={user.name}
-              referrerPolicy="no-referrer"
-              onError={() => setFailedSrc(user.image ?? null)}
-            />
-          ) : (
-            <span className="grid h-full place-items-center bg-primary font-semibold text-primary-content">
-              {initial}
-            </span>
-          )}
+      <div tabIndex={0} role="button" className="btn btn-ghost btn-circle" aria-label="Open user menu">
+        <div className="rounded-full ring-2 ring-primary ring-offset-2 ring-offset-base-100">
+          <Avatar name={user.name} image={user.image} />
         </div>
       </div>
       <ul
