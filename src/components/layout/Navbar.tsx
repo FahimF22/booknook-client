@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { LuMenu } from "react-icons/lu";
 import Logo from "@/components/ui/Logo";
 import ThemeToggle from "@/components/ui/ThemeToggle";
-import UserMenu, { type NavUser } from "./UserMenu";
+import { signOut, useSession } from "@/lib/auth-client";
+import UserMenu from "./UserMenu";
 
 const links = [
   { href: "/", label: "Home", private: false },
@@ -17,9 +18,15 @@ const links = [
 
 export default function Navbar() {
   const pathname = usePathname();
-  // Connected to BetterAuth in the authentication step
-  const user = null as NavUser | null;
-  const handleLogout = () => {};
+  const router = useRouter();
+  const { data: session, isPending } = useSession();
+  const user = session?.user ?? null;
+
+  const handleLogout = async () => {
+    await signOut();
+    router.push("/");
+    router.refresh();
+  };
 
   const visibleLinks = links.filter((l) => !l.private || user);
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
@@ -48,7 +55,7 @@ export default function Navbar() {
               className="menu dropdown-content z-50 mt-3 w-56 gap-1 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg"
             >
               {navItems}
-              {!user && (
+              {!user && !isPending && (
                 <li className="sm:hidden">
                   <Link href="/register" className="font-medium">
                     Register
@@ -66,7 +73,9 @@ export default function Navbar() {
 
         <div className="navbar-end gap-2">
           <ThemeToggle />
-          {user ? (
+          {isPending ? (
+            <div className="skeleton h-10 w-10 rounded-full" aria-label="Loading account" />
+          ) : user ? (
             <UserMenu user={user} onLogout={handleLogout} />
           ) : (
             <>
