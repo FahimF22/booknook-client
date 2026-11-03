@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
+import { APIError, createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
 import { jwt } from "better-auth/plugins";
 import { db, mongoClient } from "./mongodb";
@@ -14,6 +15,27 @@ export const auth = betterAuth({
     minPasswordLength: 6,
     // The assignment sends new users to the Login page after registering
     autoSignIn: false,
+  },
+  hooks: {
+    before: createAuthMiddleware(async (ctx) => {
+      if (ctx.path !== "/sign-up/email") return;
+      const { email, password } = (ctx.body ?? {}) as { email?: string; password?: string };
+
+      // Same password rules as the form, enforced on the server too
+      if (!password || !/[A-Z]/.test(password) || !/[a-z]/.test(password) || password.length < 6) {
+        throw new APIError("BAD_REQUEST", {
+          message: "Password must have an uppercase letter, a lowercase letter and at least 6 characters",
+        });
+      }
+
+      // With autoSignIn off, BetterAuth hides duplicate emails. The assignment wants an error shown.
+      if (email && (await ctx.context.internalAdapter.findUserByEmail(email.toLowerCase()))) {
+        throw new APIError("UNPROCESSABLE_ENTITY", {
+          code: "USER_ALREADY_EXISTS",
+          message: "An account with this email already exists. Please log in.",
+        });
+      }
+    }),
   },
   socialProviders: {
     google: {
