@@ -93,7 +93,9 @@ export default function MyBooksTable({ initialBooks }: { initialBooks: Book[] })
                 <p className="truncate text-sm text-base-content/60">by {book.author}</p>
                 <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-base-content/70">
                   <span className="badge badge-accent badge-outline">{book.category}</span>
-                  <span>{book.totalCopies} copies</span>
+                  <span>
+                    {book.totalCopies} {book.totalCopies === 1 ? "copy" : "copies"}
+                  </span>
                   <span>Added {formatDate(book.createdAt)}</span>
                 </div>
               </div>
