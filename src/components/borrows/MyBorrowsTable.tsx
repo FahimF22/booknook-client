@@ -70,8 +70,9 @@ export default function MyBorrowsTable({ initialBorrows }: { initialBorrows: Bor
           <tr>
             <th>Image</th>
             <th>Title</th>
-            <th>Borrow Date</th>
-            <th>Return Date</th>
+            {/* On phones the dates move under the title so the table fits the screen */}
+            <th className="hidden sm:table-cell">Borrow Date</th>
+            <th className="hidden sm:table-cell">Return Date</th>
             <th className="text-right">Action</th>
           </tr>
         </thead>
@@ -79,7 +80,7 @@ export default function MyBorrowsTable({ initialBorrows }: { initialBorrows: Bor
           {borrows.map((borrow) => (
             <tr key={borrow._id} className="hover:bg-base-200/50">
               <td>
-                <div className="relative h-20 w-14 overflow-hidden rounded-md bg-base-200">
+                <div className="relative h-16 w-11 overflow-hidden rounded-md bg-base-200 sm:h-20 sm:w-14">
                   <Image src={borrow.bookImage} alt={`Cover of ${borrow.bookTitle}`} fill sizes="56px" className="object-cover" />
                 </div>
               </td>
@@ -87,12 +88,23 @@ export default function MyBorrowsTable({ initialBorrows }: { initialBorrows: Bor
                 <Link href={`/books/${borrow.bookId}`} className="line-clamp-2 font-serif text-lg font-semibold leading-snug hover:text-primary">
                   {borrow.bookTitle}
                 </Link>
+                <dl className="mt-1 text-xs text-base-content/70 sm:hidden">
+                  <div>
+                    <dt className="inline">Borrowed: </dt>
+                    <dd className="inline">{formatDate(borrow.borrowDate)}</dd>
+                  </div>
+                  <div>
+                    <dt className="inline">Return by: </dt>
+                    <dd className="inline font-medium text-base-content">{formatDate(borrow.returnDate)}</dd>
+                  </div>
+                </dl>
               </td>
-              <td className="whitespace-nowrap text-base-content/70">{formatDate(borrow.borrowDate)}</td>
-              <td className="whitespace-nowrap font-medium">{formatDate(borrow.returnDate)}</td>
+              <td className="hidden whitespace-nowrap text-base-content/70 sm:table-cell">{formatDate(borrow.borrowDate)}</td>
+              <td className="hidden whitespace-nowrap font-medium sm:table-cell">{formatDate(borrow.returnDate)}</td>
               <td className="text-right">
                 <button onClick={() => setToReturn(borrow)} className="btn btn-primary btn-sm">
-                  <LuUndo2 /> Return Book
+                  <LuUndo2 /> <span className="hidden sm:inline">Return Book</span>
+                  <span className="sm:hidden">Return</span>
                 </button>
               </td>
             </tr>
