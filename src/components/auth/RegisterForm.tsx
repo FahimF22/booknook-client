@@ -60,6 +60,9 @@ export default function RegisterForm() {
       return;
     }
 
+    // Next.js keeps visited pages alive in the background, so clear the password
+    setForm({ name: "", email: "", image: "", password: "" });
+    setTouched(false);
     toast.success("Account created! Please log in.");
     router.push(redirect ? `/login?redirect=${encodeURIComponent(redirect)}` : "/login");
   };
