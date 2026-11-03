@@ -1,8 +1,8 @@
 # BookNook – A Small Online Library
 
-**Live site:** https://booknook-client.vercel.app _(replace with your live URL after deploying)_
+**Live site:** https://booknook-client-p3li.vercel.app
 
-**Server repo:** _(add the link to the booknook-server repository)_
+**Server repo:** https://github.com/FahimF22/booknook-server
 
 BookNook is a small community library on the web. Readers share the books on their shelves, borrow a book for 7 days and return it when they're done: add a book, borrow a book, return a book.
 
@@ -33,7 +33,7 @@ BookNook is a small community library on the web. Readers share the books on the
 
 - **Frontend:** Next.js 16 (App Router), TypeScript, Tailwind CSS 4, DaisyUI 5, Swiper, Framer Motion, react-hot-toast
 - **Auth:** BetterAuth with the MongoDB adapter, Google sign-in and the JWT plugin
-- **Backend:** Express + MongoDB ([booknook-server](#))
+- **Backend:** Express + MongoDB ([booknook-server](https://github.com/FahimF22/booknook-server))
 
 ## Run locally
 
