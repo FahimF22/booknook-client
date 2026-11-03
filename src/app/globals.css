@@ -103,3 +103,44 @@
     @apply font-serif;
   }
 }
+
+/* Hero slider: theme the Swiper arrows and dots */
+.hero-slider {
+  --swiper-theme-color: var(--color-accent);
+  --swiper-navigation-size: 1.25rem;
+  --swiper-pagination-bullet-inactive-color: oklch(97% 0.01 85);
+  --swiper-pagination-bullet-inactive-opacity: 0.6;
+  --swiper-pagination-bullet-size: 10px;
+  --swiper-pagination-bottom: 1.5rem;
+}
+.hero-slider .swiper-button-prev,
+.hero-slider .swiper-button-next {
+  @apply hidden h-12 w-12 rounded-full bg-black/25 text-[oklch(97%_0.01_85)] backdrop-blur transition-colors hover:bg-accent hover:text-accent-content md:flex;
+}
+/* Arrows sit in the bottom-right corner so they never cover the headline */
+.hero-slider .swiper-horizontal .swiper-button-prev,
+.hero-slider .swiper-horizontal .swiper-button-next {
+  top: auto;
+  bottom: 1.25rem;
+  margin-top: 0;
+  left: auto;
+}
+.hero-slider .swiper-horizontal .swiper-button-prev {
+  right: 5.25rem;
+}
+.hero-slider .swiper-horizontal .swiper-button-next {
+  right: 1.5rem;
+}
+.hero-slider .swiper-button-prev svg,
+.hero-slider .swiper-button-next svg {
+  @apply h-4 w-4;
+}
+.hero-slider .swiper-pagination-bullet-active {
+  @apply w-7 rounded-full;
+}
+/* Keep the dots bar only as wide as the dots, so it doesn't cover the arrows */
+.hero-slider .swiper-horizontal > .swiper-pagination-bullets {
+  left: 50%;
+  width: auto;
+  transform: translateX(-50%);
+}
