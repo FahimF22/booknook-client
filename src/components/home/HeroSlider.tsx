@@ -1,5 +1,6 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import { A11y, Autoplay, EffectFade, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -8,7 +9,21 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import HeroSlide, { sliderHeight, slides } from "./HeroSlide";
 
+const subscribe = () => () => {};
+
 export default function HeroSlider() {
+  // Swiper reads the clock while rendering, which Next.js blocks on the server.
+  // So the server sends the first slide as a still image, and the browser swaps in the slider.
+  const inBrowser = useSyncExternalStore(subscribe, () => true, () => false);
+
+  if (!inBrowser) {
+    return (
+      <div className={sliderHeight}>
+        <HeroSlide slide={slides[0]} first />
+      </div>
+    );
+  }
+
   return (
     <Swiper
       modules={[Autoplay, EffectFade, Navigation, Pagination, A11y]}
