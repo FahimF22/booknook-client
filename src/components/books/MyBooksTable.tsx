@@ -3,15 +3,52 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { LuEye, LuPencil } from "react-icons/lu";
+import toast from "react-hot-toast";
+import { LuEye, LuPencil, LuTrash2 } from "react-icons/lu";
+import ConfirmModal from "@/components/ui/ConfirmModal";
+import { apiRequest } from "@/lib/client-api";
 import type { Book } from "@/lib/types";
 
 const formatDate = (d: string) => new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 
 export default function MyBooksTable({ initialBooks }: { initialBooks: Book[] }) {
   // Always show the latest list from the server; only remember deletions made on this page
-  const [deletedIds] = useState<string[]>([]);
+  const [deletedIds, setDeletedIds] = useState<string[]>([]);
   const books = initialBooks.filter((b) => !deletedIds.includes(b._id));
+  const [toDelete, setToDelete] = useState<Book | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const confirmDelete = async () => {
+    if (!toDelete) return;
+    setDeleting(true);
+    try {
+      await apiRequest(`/books/${toDelete._id}`, { method: "DELETE" });
+      setDeletedIds((ids) => [...ids, toDelete._id]);
+      toast.success(`"${toDelete.title}" was deleted.`);
+      setToDelete(null);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not delete the book.");
+      setToDelete(null);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const modal = (
+    <ConfirmModal
+      open={!!toDelete}
+      title="Delete this book?"
+      confirmLabel="Yes, delete it"
+      busy={deleting}
+      onConfirm={confirmDelete}
+      onClose={() => !deleting && setToDelete(null)}
+    >
+      <p>
+        <strong className="text-base-content">&ldquo;{toDelete?.title}&rdquo;</strong> will be removed from BookNook for
+        good. This can&apos;t be undone.
+      </p>
+    </ConfirmModal>
+  );
 
   if (!books.length) {
     return (
@@ -20,12 +57,14 @@ export default function MyBooksTable({ initialBooks }: { initialBooks: Book[] })
         <Link href="/add-book" className="btn btn-primary mt-6">
           Add Your First Book
         </Link>
+        {modal}
       </div>
     );
   }
 
   return (
     <div className="overflow-x-auto rounded-box border border-base-300 bg-base-100 shadow-sm">
+      {modal}
       <table className="table">
         <thead className="bg-base-200 text-sm text-base-content">
           <tr>
@@ -63,6 +102,9 @@ export default function MyBooksTable({ initialBooks }: { initialBooks: Book[] })
                   <Link href={`/my-books/${book._id}/edit`} className="btn btn-outline btn-primary btn-sm">
                     <LuPencil /> Edit
                   </Link>
+                  <button onClick={() => setToDelete(book)} className="btn btn-outline btn-error btn-sm">
+                    <LuTrash2 /> Delete
+                  </button>
                 </div>
               </td>
             </tr>
